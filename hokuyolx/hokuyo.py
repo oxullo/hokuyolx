@@ -67,6 +67,8 @@ class HokuyoLX(object):
         self.time_tolerance = time_tolerance
         self.convert_time = convert_time
         self._connect_to_laser(False)
+        self.tsync = tsync
+        self._tn = 0
         if tsync:
             self.time_sync()
         if info:
@@ -114,7 +116,7 @@ class HokuyoLX(object):
             t, self.tzero, self._tn)
         dt = int(time.time()*1000) - t
         logging.debug('Delta t with local time: %d', dt)
-        if abs(dt) > self.time_tolerance:
+        if self.tsync and abs(dt) > self.time_tolerance:
             diff = (1 << 24) - self.time_tolerance
             if dt > diff and self.tzero != 0:
                 self._logger.warning('Timestamp overflow detected, '
